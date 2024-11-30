@@ -132,6 +132,12 @@
     width: 50%;
   }
 
+  @media  screen and (max-width: 768px) {
+    .esquerdo{
+        width: 100%;
+    }
+  }
+
   .box {
     display: flex;
     justify-content: space-between;
