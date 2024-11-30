@@ -132,11 +132,7 @@
     width: 50%;
   }
 
-  @media  screen and (max-width: 768px) {
-    .esquerdo{
-        width: 100%;
-    }
-  }
+
 
   .box {
     display: flex;
@@ -287,4 +283,33 @@
     font-size: 30px;
     color: #201d1d;
     font-weight: bold;
+  }
+
+
+  @media  screen and (max-width: 768px) {
+    .esquerdo{
+        width: 100%;
+    }
+
+    .popup-content{
+        width: 100%;
+    }
+
+    .popup-buttons{
+        display: flex
+;
+    justify-content: space-between;
+    margin-top: 20px;
+    width: 100%;
+    flex-direction: column;
+    }
+
+    .popup-button{
+        width: 100%;
+    }
+
+    .box-btn {
+        height: 35%;
+        margin-bottom: 46px;
+    }
   }
