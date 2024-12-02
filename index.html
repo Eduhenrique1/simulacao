@@ -194,7 +194,7 @@
     
         if (months === 0 || anticipateMonth === 0) {
           console.warn("Por favor, selecione um prazo e um mês para antecipação.");
-          return;
+          return; // Não calcular se não houver valores válidos para prazo e antecipação
         }
     
         // Determinar a taxa de juros com base nas regras
@@ -315,7 +315,7 @@
           alternateRowStyles: { fillColor: [245, 245, 245] },
         });
     
-        
+        // Gerar tabela de parcelas com datas de vencimento
         const tableData = [];
         const startDateObj = new Date(startDate);
     
@@ -362,7 +362,8 @@
       }
     
       function printSimulationPDF() {
-        const doc = generatePDFContent();
+        const doc = generatePDFContent(); // Reutilizando a função de geração
+        if (doc) {
           doc.autoPrint();
           window.open(doc.output('bloburl'), '_blank');
         }
