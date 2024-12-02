@@ -43,6 +43,36 @@
           <section class="simulator">
             <div class="input-group">
               <div class="box">
+                <label for="client-name">Nome do Cliente</label>
+              </div>
+              <div class="input-wrapper">
+                   <input type="text" id="client-name" placeholder="Digite seu nome completo" />
+              </div>
+           
+            </div>
+
+            <div class="input-group">
+              <div class="box">
+                <label for="client-phone">Telefone</label>
+              </div>
+              <div class="input-wrapper">
+                   <input type="text" id="client-phone" placeholder="Digite seu número de contato" />
+              </div>
+           
+            </div>
+
+            <div class="input-group">
+              <div class="box">
+                <label for="client-email">E-mail</label>
+              </div>
+              <div class="input-wrapper">
+                    <input type="email" id="client-email" placeholder="digite seu melhor E-mail" />
+              </div>
+          
+            </div>
+
+            <div class="input-group">
+              <div class="box">
                 <label for="amount-text">Quanto precisa?</label>
               </div>
               <div class="input-wrapper">
@@ -75,9 +105,6 @@
             <div class="input-group">
               <div class="box">
                 <label for="months-select">Pagar em quantos meses?</label>
-                <!-- <div class="details">
-                    <span id="monthly-payment-display">R$ 112,50/mês</span>
-                  </div> -->
               </div>
               <select id="months-select">
                 <option value="#" selected>Selecione um prazo</option>
@@ -88,6 +115,19 @@
                 <option value="60">60 meses</option>
               </select>
             </div>
+
+            <div class="input-group">
+              <div class="box">
+                <label for="anticipate-month">Qual é o mês que deseja antecipar?</label>
+              </div>
+              <select id="anticipate-month">
+                <option value="#" selected>Selecione o mês</option>
+                <option value="3">3º mês</option>
+                <option value="5">5º mês</option>
+                <option value="6">6º mês</option>
+              </select>
+            </div>
+
             <div class="input-group">
               <div class="box">
                 <label for="start-date">Data inicial do vencimento</label>
@@ -122,14 +162,14 @@
     </div>
 
     <script>
+      function openPopup() {
+        document.getElementById("popupOverlay").style.display = "block";
+      }
 
-function openPopup() {
-      document.getElementById("popupOverlay").style.display = "block";
-    }
+      function closePopup() {
+        document.getElementById("popupOverlay").style.display = "none";
+      }
 
-    function closePopup() {
-      document.getElementById("popupOverlay").style.display = "none";
-    }
       function updateSimulation() {
         const amount =
           parseFloat(document.getElementById("amount-text").value) || 0;
@@ -140,8 +180,9 @@ function openPopup() {
 
         // Calcula o valor restante e a parcela mensal
         const remainingAmount = Math.max(amount - entryValue, 0);
-        const monthlyPayment = (remainingAmount / months).toFixed(2);   
+        const monthlyPayment = (remainingAmount / months).toFixed(2);
       }
+
       function formatCurrency(value) {
         return value.toLocaleString("pt-BR", {
           style: "currency",
@@ -149,147 +190,31 @@ function openPopup() {
         });
       }
 
-        // Função para gerar o conteúdo do PDF (compartilhada por download e impressão)
-  function generatePDFContent() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Pegar valores do formulário
-    const amountText = $("#amount-text").val().replace(/[^\d,]/g, "").replace(",", ".");
-    const entryValueText = $("#entry-value").val().replace(/[^\d,]/g, "").replace(",", ".");
-    const amount = parseFloat(amountText) || 0;
-    const entryValue = parseFloat(entryValueText) || 0;
-    const months = parseInt($("#months-select").val()) || 1;
-    const startDate = document.getElementById("start-date").value;
-
-    if (!startDate) {
-      alert("Por favor, insira a data inicial do vencimento.");
-      return null;
-    }
-
-    // Cálculos
-    const remainingAmount = Math.max(amount - entryValue, 0);
-    const monthlyPayment = parseFloat((remainingAmount / months).toFixed(2));
-
-    // Adicionar logotipo
-    const logoUrl = "images/VFBANK.png";
-    doc.addImage(logoUrl, "PNG", 80, 10, 50, 30);
-
-    // Ajustar faixa amarela de "Simulação de Crédito"
-    doc.setFillColor(255, 204, 0);
-    doc.rect(10, 50, 190, 10, "F");
-
-    // Texto "Simulação de Crédito"
-    doc.setFont("Helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(255, 255, 255);
-    doc.text("Simulação de Crédito", 105, 57, null, null, "center");
-
-    // Tabela de Parâmetros
-    const parametersTable = [
-      ["Crédito", formatCurrency(amount)],
-      ["Entrada", formatCurrency(entryValue)],
-      ["Financiado", formatCurrency(remainingAmount)],
-      ["Prazo (Meses)", `${months}`],
-      ["Parcela (Mensal)", formatCurrency(monthlyPayment)],
-    ];
-
-    doc.autoTable({
-      startY: 65,
-      head: [["PARÂMETROS", "VALORES"]],
-      body: parametersTable,
-      styles: { fontSize: 10, cellPadding: 5 },
-      headStyles: { fillColor: [255, 204, 0], textColor: 0 },
-      alternateRowStyles: { fillColor: [245, 245, 245] },
-    });
-
-    // Gerar tabela de parcelas com datas de vencimento
-    const tableData = [];
-    const startDateObj = new Date(startDate);
-
-    let saldoAtual = remainingAmount;
-    for (let i = 1; i <= months; i++) {
-      const dueDate = new Date(startDateObj);
-      dueDate.setMonth(dueDate.getMonth() + (i - 1));
-      const formattedDate = dueDate.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-
-      saldoAtual -= monthlyPayment;
-      tableData.push([
-        i,
-        formattedDate,
-        formatCurrency(Math.max(saldoAtual, 0)),
-        i === 1 ? formatCurrency(entryValue) : formatCurrency(0),
-        formatCurrency(monthlyPayment),
-        formatCurrency(monthlyPayment),
-      ]);
-    }
-
-    doc.autoTable({
-      startY: doc.lastAutoTable.finalY + 10,
-      head: [
-        [
-          "PARC",
-          "VENCIMENTO",
-          "SALDO ATUAL",
-          "ENTRADA",
-          "PARCELA",
-          "PAGAMENTO",
-        ],
-      ],
-      body: tableData,
-      styles: { fontSize: 10, cellPadding: 4 },
-      headStyles: { fillColor: [0, 0, 0], textColor: 255 },
-      alternateRowStyles: { fillColor: [240, 240, 240] },
-    });
-
-    return doc;
-  }
-
-      function printSimulationPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = generatePDFContent(); // Reutilizando a função de geração
-        const pdfBlob = doc.output("blob");
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-
-        // Abrir o PDF em uma nova aba e acionar a impressão
-        const printWindow = window.open(pdfUrl, "_blank");
-        printWindow.onload = function () {
-          printWindow.print();
-        };
-      }
-
-      function downloadSimulationPDF() {
+      // Função para gerar o conteúdo do PDF (compartilhada por download e impressão)
+      function generatePDFContent() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
         // Pegar valores do formulário
-        const amountText = $("#amount-text")
-          .val()
-          .replace(/[^\d,]/g, "")
-          .replace(",", ".");
-        const entryValueText = $("#entry-value")
-          .val()
-          .replace(/[^\d,]/g, "")
-          .replace(",", ".");
+        const clientName = $("#client-name").val();
+        const clientPhone = $("#client-phone").val();
+        const clientEmail = $("#client-email").val();
+        const amountText = $("#amount-text").val().replace(/[^\d,]/g, "").replace(",", ".");
+        const entryValueText = $("#entry-value").val().replace(/[^\d,]/g, "").replace(",", ".");
         const amount = parseFloat(amountText) || 0;
         const entryValue = parseFloat(entryValueText) || 0;
         const months = parseInt($("#months-select").val()) || 1;
+        const anticipateMonth = $("#anticipate-month").val();
         const startDate = document.getElementById("start-date").value;
 
         if (!startDate) {
           alert("Por favor, insira a data inicial do vencimento.");
-          return;
+          return null;
         }
 
         // Cálculos
         const remainingAmount = Math.max(amount - entryValue, 0);
-        const monthlyPayment = parseFloat(
-          (remainingAmount / months).toFixed(2)
-        );
+        const monthlyPayment = parseFloat((remainingAmount / months).toFixed(2));
 
         // Adicionar logotipo
         const logoUrl = "images/VFBANK.png";
@@ -307,11 +232,15 @@ function openPopup() {
 
         // Tabela de Parâmetros
         const parametersTable = [
+          ["Nome do Cliente", clientName],
+          ["Telefone", clientPhone],
+          ["E-mail", clientEmail],
           ["Crédito", formatCurrency(amount)],
           ["Entrada", formatCurrency(entryValue)],
           ["Financiado", formatCurrency(remainingAmount)],
           ["Prazo (Meses)", `${months}`],
           ["Parcela (Mensal)", formatCurrency(monthlyPayment)],
+          ["Antecipar Mês", anticipateMonth ? `${anticipateMonth}º mês` : "N/A"],
         ];
 
         doc.autoTable({
@@ -366,7 +295,28 @@ function openPopup() {
           alternateRowStyles: { fillColor: [240, 240, 240] },
         });
 
-        doc.save("simulacao_credito.pdf");
+        return doc;
+      }
+
+      function printSimulationPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = generatePDFContent(); // Reutilizando a função de geração
+        const pdfBlob = doc.output("blob");
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        // Abrir o PDF em uma nova aba e acionar a impressão
+        const printWindow = window.open(pdfUrl, "_blank");
+        printWindow.onload = function () {
+          printWindow.print();
+        };
+      }
+
+      function downloadSimulationPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = generatePDFContent();
+        if (doc) {
+          doc.save("simulacao_credito.pdf");
+        }
       }
 
       document
