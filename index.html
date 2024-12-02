@@ -165,71 +165,133 @@
       function openPopup() {
         document.getElementById("popupOverlay").style.display = "block";
       }
-
+    
       function closePopup() {
         document.getElementById("popupOverlay").style.display = "none";
       }
-
+    
       function updateSimulation() {
-        const amount =
-          parseFloat(document.getElementById("amount-text").value) || 0;
-        const entryValue =
-          parseFloat(document.getElementById("entry-value").value) || 0;
-        const months =
-          parseInt(document.getElementById("months-select").value) || 1;
-
-        // Calcula o valor restante e a parcela mensal
+        const amount = parseFloat(
+          document.getElementById("amount-text").value.replace(/[R$\.\s]/g, "").replace(",", ".")
+        ) || 0;
+    
+        const entryValue = parseFloat(
+          document.getElementById("entry-value").value.replace(/[R$\.\s]/g, "").replace(",", ".")
+        ) || 0;
+    
+        const monthsSelectValue = document.getElementById("months-select").value;
+        const anticipateMonthValue = document.getElementById("anticipate-month").value;
+    
+        // Garantir que os valores dos selects sejam válidos
+        const months = parseInt(monthsSelectValue) > 0 ? parseInt(monthsSelectValue) : 0;
+        const anticipateMonth = parseInt(anticipateMonthValue) > 0 ? parseInt(anticipateMonthValue) : 0;
+    
+        // Debugging: Verificando os valores selecionados
+        console.log("Valor necessário: ", amount);
+        console.log("Valor de entrada: ", entryValue);
+        console.log("Prazo (meses): ", months);
+        console.log("Antecipar mês: ", anticipateMonth);
+    
+        if (months === 0 || anticipateMonth === 0) {
+          console.warn("Por favor, selecione um prazo e um mês para antecipação.");
+          return;
+        }
+    
+        // Determinar a taxa de juros com base nas regras
+        let interestRate = 0;
+    
+        if (anticipateMonth === 3 && (months === 24 || months === 36 || months === 48)) {
+          interestRate = 0.0199; // 1,99%
+        } else if (anticipateMonth === 5 && (months === 24 || months === 36 || months === 48)) {
+          interestRate = 0.0179; // 1,79%
+        } else if (anticipateMonth === 6 && (months === 24 || months === 36 || months === 48)) {
+          interestRate = 0.0169; // 1,69%
+        } else if (anticipateMonth >= 3 && anticipateMonth <= 6 && months === 12) {
+          interestRate = 0.0245; // 2,45%
+        } else if (anticipateMonth >= 12 && months === 60) {
+          interestRate = 0.0149; // 1,49%
+        }
+    
+        console.log("Taxa de juros aplicada: ", interestRate);
+    
+        // Calcula o valor restante e a parcela mensal com juros
         const remainingAmount = Math.max(amount - entryValue, 0);
-        const monthlyPayment = (remainingAmount / months).toFixed(2);
+        const totalWithInterest = remainingAmount * Math.pow(1 + interestRate, months);
+        const monthlyPayment = (totalWithInterest / months).toFixed(2);
+    
+        // Debugging: Verificando os valores finais calculados
+        console.log("Valor restante a financiar: ", remainingAmount);
+        console.log("Valor total com juros: ", totalWithInterest);
+        console.log("Parcela mensal: ", monthlyPayment);
+    
+        // Atualizar o campo de parcela mensal
+        const monthlyPaymentElement = document.getElementById("monthly-payment");
+        if (monthlyPaymentElement) {
+          monthlyPaymentElement.innerText = formatCurrency(monthlyPayment);
+        }
+    
+        // Atualizar os valores globais para geração do PDF
+        window.simulationData = {
+          clientName: document.getElementById("client-name").value,
+          clientPhone: document.getElementById("client-phone").value,
+          clientEmail: document.getElementById("client-email").value,
+          amount: amount,
+          entryValue: entryValue,
+          months: months,
+          anticipateMonth: anticipateMonth,
+          interestRate: interestRate,
+          remainingAmount: remainingAmount,
+          monthlyPayment: monthlyPayment,
+          startDate: document.getElementById("start-date").value,
+        };
       }
-
+    
       function formatCurrency(value) {
-        return value.toLocaleString("pt-BR", {
+        return parseFloat(value).toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         });
       }
-
-      // Função para gerar o conteúdo do PDF (compartilhada por download e impressão)
+    
       function generatePDFContent() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-
-        // Pegar valores do formulário
-        const clientName = $("#client-name").val();
-        const clientPhone = $("#client-phone").val();
-        const clientEmail = $("#client-email").val();
-        const amountText = $("#amount-text").val().replace(/[^\d,]/g, "").replace(",", ".");
-        const entryValueText = $("#entry-value").val().replace(/[^\d,]/g, "").replace(",", ".");
-        const amount = parseFloat(amountText) || 0;
-        const entryValue = parseFloat(entryValueText) || 0;
-        const months = parseInt($("#months-select").val()) || 1;
-        const anticipateMonth = $("#anticipate-month").val();
-        const startDate = document.getElementById("start-date").value;
-
-        if (!startDate) {
-          alert("Por favor, insira a data inicial do vencimento.");
+    
+        const data = window.simulationData;
+        if (!data || !data.startDate) {
+          alert("Por favor, preencha todos os campos e gere a simulação antes de baixar o PDF.");
           return null;
         }
-
-        // Cálculos
-        const remainingAmount = Math.max(amount - entryValue, 0);
-        const monthlyPayment = parseFloat((remainingAmount / months).toFixed(2));
-
+    
+        // Pegar valores do formulário
+        const {
+          clientName,
+          clientPhone,
+          clientEmail,
+          amount,
+          entryValue,
+          months,
+          anticipateMonth,
+          interestRate,
+          remainingAmount,
+          monthlyPayment,
+          startDate,
+        } = data;
+    
         // Adicionar logotipo
         const logoUrl = "images/VFBANK.png";
         doc.addImage(logoUrl, "PNG", 80, 10, 50, 30);
-
+    
         // Ajustar faixa amarela de "Simulação de Crédito"
         doc.setFillColor(255, 204, 0);
         doc.rect(10, 50, 190, 10, "F");
-
+    
         // Texto "Simulação de Crédito"
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(14);
         doc.setTextColor(255, 255, 255);
         doc.text("Simulação de Crédito", 105, 57, null, null, "center");
-
+    
         // Tabela de Parâmetros
         const parametersTable = [
           ["Nome do Cliente", clientName],
@@ -239,10 +301,11 @@
           ["Entrada", formatCurrency(entryValue)],
           ["Financiado", formatCurrency(remainingAmount)],
           ["Prazo (Meses)", `${months}`],
+          ["Taxa de Juros", `${(interestRate * 100).toFixed(2)}%`],
           ["Parcela (Mensal)", formatCurrency(monthlyPayment)],
           ["Antecipar Mês", anticipateMonth ? `${anticipateMonth}º mês` : "N/A"],
         ];
-
+    
         doc.autoTable({
           startY: 65,
           head: [["PARÂMETROS", "VALORES"]],
@@ -251,11 +314,11 @@
           headStyles: { fillColor: [255, 204, 0], textColor: 0 },
           alternateRowStyles: { fillColor: [245, 245, 245] },
         });
-
-        // Gerar tabela de parcelas com datas de vencimento
+    
+        
         const tableData = [];
         const startDateObj = new Date(startDate);
-
+    
         let saldoAtual = remainingAmount;
         for (let i = 1; i <= months; i++) {
           const dueDate = new Date(startDateObj);
@@ -265,7 +328,7 @@
             month: "2-digit",
             year: "numeric",
           });
-
+    
           saldoAtual -= monthlyPayment;
           tableData.push([
             i,
@@ -276,7 +339,7 @@
             formatCurrency(monthlyPayment),
           ]);
         }
-
+    
         doc.autoTable({
           startY: doc.lastAutoTable.finalY + 10,
           head: [
@@ -294,40 +357,31 @@
           headStyles: { fillColor: [0, 0, 0], textColor: 255 },
           alternateRowStyles: { fillColor: [240, 240, 240] },
         });
-
+    
         return doc;
       }
-
+    
       function printSimulationPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = generatePDFContent(); // Reutilizando a função de geração
-        const pdfBlob = doc.output("blob");
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-
-        // Abrir o PDF em uma nova aba e acionar a impressão
-        const printWindow = window.open(pdfUrl, "_blank");
-        printWindow.onload = function () {
-          printWindow.print();
-        };
+        const doc = generatePDFContent();
+          doc.autoPrint();
+          window.open(doc.output('bloburl'), '_blank');
+        }
       }
-
+    
       function downloadSimulationPDF() {
-        const { jsPDF } = window.jspdf;
         const doc = generatePDFContent();
         if (doc) {
           doc.save("simulacao_credito.pdf");
         }
       }
-
-      document
-        .getElementById("amount-text")
-        .addEventListener("change", updateSimulation);
-      document
-        .getElementById("entry-value")
-        .addEventListener("change", updateSimulation);
-      document
-        .getElementById("months-select")
-        .addEventListener("change", updateSimulation);
+    
+      // Adicionar eventos de atualização
+      document.getElementById("amount-text").addEventListener("change", updateSimulation);
+      document.getElementById("entry-value").addEventListener("change", updateSimulation);
+      document.getElementById("months-select").addEventListener("change", updateSimulation);
+      document.getElementById("anticipate-month").addEventListener("change", updateSimulation);
+      document.getElementById("start-date").addEventListener("change", updateSimulation);
     </script>
+    
   </body>
 </html>
