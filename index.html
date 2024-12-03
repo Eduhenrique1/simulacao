@@ -175,23 +175,23 @@
         const anticipateMonth = parseInt(anticipateMonthValue) > 0 ? parseInt(anticipateMonthValue) : 0;
 
         if (months === 0 || anticipateMonth === 0) {
-          console.warn("Por favor, selecione um prazo e um mês para antecipação.");
-          return;
+            console.warn("Por favor, selecione um prazo e um mês para antecipação.");
+            return;
         }
 
-        // Determinar a taxa de juros com base nas regras da imagem
+        // Determinar a taxa de juros com base nas regras
         let interestRate = 0;
 
         if (anticipateMonth === 3 && [24, 36, 48].includes(months)) {
-          interestRate = 0.0199; // 1,99% ao mês
+            interestRate = 0.0199; // 1,99% ao mês
         } else if (anticipateMonth === 5 && [24, 36, 48].includes(months)) {
-          interestRate = 0.0179; // 1,79% ao mês
+            interestRate = 0.0179; // 1,79% ao mês
         } else if (anticipateMonth === 6 && [24, 36, 48].includes(months)) {
-          interestRate = 0.0169; // 1,69% ao mês
+            interestRate = 0.0169; // 1,69% ao mês
         } else if ([3, 5, 6].includes(anticipateMonth) && months === 12) {
-          interestRate = 0.0245; // 2,45% ao mês
+            interestRate = 0.0245; // 2,45% ao mês
         } else if (anticipateMonth === 12 && months === 60) {
-          interestRate = 0.0149; // 1,49% ao mês
+            interestRate = 0.0149; // 1,49% ao mês
         }
 
         console.log("Taxa de juros aplicada: ", interestRate);
@@ -201,51 +201,77 @@
         const startDate = document.getElementById("start-date").value;
         const startDateObj = new Date(startDate);
 
-        // Primeira fase - cálculo das parcelas antes do aporte
+        // Primeira fase - Cálculo das parcelas antes do aporte
         let monthlyPayment = (saldoAtual / months).toFixed(2);
 
-        for (let i = 1; i <= months; i++) {
-          const dueDate = new Date(startDateObj);
-          dueDate.setMonth(dueDate.getMonth() + (i - 1));
-          const formattedDate = dueDate.toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          });
+        for (let i = 1; i < anticipateMonth; i++) {
+            const dueDate = new Date(startDateObj);
+            dueDate.setMonth(dueDate.getMonth() + (i - 1));
+            const formattedDate = dueDate.toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
 
-          if (i === anticipateMonth && entryValue > 0) {
-            saldoAtual -= entryValue; // Aplicar aporte
-            // Recalcular as parcelas para os meses restantes com juros
-            const mesesRestantes = months - i;
-            if (mesesRestantes > 0) {
-              saldoAtual = saldoAtual * Math.pow(1 + interestRate, mesesRestantes); // Aplicando juros ao saldo remanescente
-              monthlyPayment = (saldoAtual / mesesRestantes).toFixed(2);
-            }
-          }
+            saldoAtual -= monthlyPayment; // Subtrair parcela mensal
+            console.log(`Mês ${i} - Pagamento: ${monthlyPayment}, Saldo atual: ${saldoAtual.toFixed(2)}`);
 
-          saldoAtual -= monthlyPayment; // Subtrair parcela mensal
+            tableData.push([
+                i,
+                formattedDate,
+                formatCurrency(0),
+                formatCurrency(monthlyPayment),
+                formatCurrency(monthlyPayment),
+            ]);
+        }
 
-          tableData.push([
-            i,
-            formattedDate,
-            i === anticipateMonth ? formatCurrency(entryValue) : formatCurrency(0),
-            formatCurrency(monthlyPayment),
-            formatCurrency(monthlyPayment),
-          ]);
+        // Aplicar o aporte no mês de antecipação
+        const saldoAntesAporte = saldoAtual;
+        saldoAtual -= entryValue;
+        console.log(`Saldo antes do aporte: ${saldoAntesAporte.toFixed(2)}`);
+        console.log(`Aplicando aporte de ${entryValue} no mês ${anticipateMonth}, novo saldo: ${saldoAtual.toFixed(2)}`);
+
+        // Fase 3 - Aplicar juros simples ao saldo restante e recalcular parcelas
+        const mesesRestantes = months - anticipateMonth + 1;
+        saldoAtual += saldoAtual * interestRate; // Aplicar juros ao saldo restante
+        console.log(`Saldo atualizado com juros aplicados ao valor restante: ${saldoAtual.toFixed(2)}`);
+
+        monthlyPayment = (saldoAtual / mesesRestantes).toFixed(2); // Recalcular as parcelas restantes
+        console.log(`Novo valor da parcela mensal após juros: ${monthlyPayment}`);
+
+        for (let i = anticipateMonth; i <= months; i++) {
+            const dueDate = new Date(startDateObj);
+            dueDate.setMonth(dueDate.getMonth() + (i - 1));
+            const formattedDate = dueDate.toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
+
+            saldoAtual -= monthlyPayment; // Subtrair parcela mensal
+            console.log(`Mês ${i} - Pagamento: ${monthlyPayment}, Saldo atual: ${saldoAtual.toFixed(2)}`);
+
+            tableData.push([
+                i,
+                formattedDate,
+                i === anticipateMonth ? formatCurrency(entryValue) : formatCurrency(0),
+                formatCurrency(monthlyPayment),
+                formatCurrency(monthlyPayment),
+            ]);
         }
 
         window.simulationData = {
-          clientName: document.getElementById("client-name").value,
-          clientPhone: document.getElementById("client-phone").value,
-          clientEmail: document.getElementById("client-email").value,
-          amount: amount,
-          entryValue: entryValue,
-          months: months,
-          anticipateMonth: anticipateMonth,
-          interestRate: interestRate,
-          monthlyPayment: monthlyPayment,
-          startDate: startDate,
-          tableData: tableData,
+            clientName: document.getElementById("client-name").value,
+            clientPhone: document.getElementById("client-phone").value,
+            clientEmail: document.getElementById("client-email").value,
+            amount: amount,
+            entryValue: entryValue,
+            months: months,
+            anticipateMonth: anticipateMonth,
+            interestRate: interestRate,
+            monthlyPayment: monthlyPayment,
+            startDate: startDate,
+            tableData: tableData,
         };
       }
 
@@ -332,7 +358,7 @@
       }
 
       function printSimulationPDF() {
-        const doc = generatePDFContent(); // Reutilizando a função de geração
+        const doc = generatePDFContent();
         if (doc) {
           doc.autoPrint();
           window.open(doc.output('bloburl'), '_blank');
