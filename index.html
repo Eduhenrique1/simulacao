@@ -49,15 +49,7 @@
           <h2>Simule seu Crédito</h2>
           <section class="simulator">
             <!-- Tem entrada? -->
-            <div class="input-group">
-              <div class="box">
-                <label for="has-entry">Tem entrada?</label>
-              </div>
-              <select id="has-entry">
-                <option value="nao" selected>Não</option>
-                <option value="sim">Sim</option>
-              </select>
-            </div>
+          
 
             <!-- Dados do cliente -->
             <div class="input-group">
@@ -96,6 +88,17 @@
                 <span class="currency-prefix">R$</span>
                 <input type="text" id="amount-text" maxlength="20" value="" placeholder="0,00" />
               </div>
+            </div>
+
+            <div class="input-group">
+              <div class="box">
+                <label for="has-entry">Tem entrada?</label>
+              </div>
+              <select id="has-entry">
+                <option value="#" selected>Selecione</option>
+                <option value="nao" >Não</option>
+                <option value="sim">Sim</option>
+              </select>
             </div>
 
             <!-- Campos de entrada e aporte -->
