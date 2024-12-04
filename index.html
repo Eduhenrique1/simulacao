@@ -1,81 +1,105 @@
-  <!DOCTYPE html>
-  <html lang="pt">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Simulador de Crédito</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link rel="stylesheet" href="style.css">
-      <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap"
-        rel="stylesheet"
-      />
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-      <script>
-        $(document).ready(function () {
-          // Aplicar máscara de moeda nos campos
-          $("#amount-text, #entry-value").mask("R$ ###.###.###,00", {
-            reverse: true,
-          });
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador de Crédito</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="style.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Aplicar máscara de moeda nos campos
+        $("#amount-text, #entry-value").mask("R$ ###.###.###,00", {
+          reverse: true,
         });
-      </script>
-    </head>
-    <body>
-      <header>
-        <img src="images/VFBANK.png" alt="Logo" class="logo" />
-        <nav>
-          <a href="#">Simulador</a>
-          <a href="#" class="highlight">Crédito Pessoal</a>
-        </nav>
-      </header>
-      <div class="container">
-        <main>
-          <div class="esquerdo">
-            <h2>Simule seu Crédito</h2>
-            <section class="simulator">
-              <!-- Dados do cliente -->
-              <div class="input-group">
-                <div class="box">
-                  <label for="client-name">Nome do Cliente</label>
-                </div>
-                <div class="input-wrapper">
-                  <input type="text" id="client-name" placeholder="Digite seu nome completo" />
-                </div>
-              </div>
 
-              <div class="input-group">
-                <div class="box">
-                  <label for="client-phone">Telefone</label>
-                </div>
-                <div class="input-wrapper">
-                  <input type="text" id="client-phone" placeholder="Digite seu número de contato" />
-                </div>
+        // Mostrar ou ocultar campos de entrada e aporte
+        $("#has-entry").change(function () {
+          if ($(this).val() === "sim") {
+            $("#entry-fields").show();
+            $("#months-select option[value='60']").show();
+          } else {
+            $("#entry-fields").hide();
+            $("#months-select option[value='60']").hide();
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <header>
+      <img src="images/VFBANK.png" alt="Logo" class="logo" />
+      <nav>
+        <a href="#">Simulador</a>
+        <a href="#" class="highlight">Crédito Pessoal</a>
+      </nav>
+    </header>
+    <div class="container">
+      <main>
+        <div class="esquerdo">
+          <h2>Simule seu Crédito</h2>
+          <section class="simulator">
+            <!-- Tem entrada? -->
+            <div class="input-group">
+              <div class="box">
+                <label for="has-entry">Tem entrada?</label>
               </div>
+              <select id="has-entry">
+                <option value="nao" selected>Não</option>
+                <option value="sim">Sim</option>
+              </select>
+            </div>
 
-              <div class="input-group">
-                <div class="box">
-                  <label for="client-email">E-mail</label>
-                </div>
-                <div class="input-wrapper">
-                  <input type="email" id="client-email" placeholder="Digite seu melhor e-mail" />
-                </div>
+            <!-- Dados do cliente -->
+            <div class="input-group">
+              <div class="box">
+                <label for="client-name">Nome do Cliente</label>
               </div>
-
-              <!-- Dados do empréstimo -->
-              <div class="input-group">
-                <div class="box">
-                  <label for="amount-text">Quanto precisa?</label>
-                </div>
-                <div class="input-wrapper">
-                  <span class="currency-prefix">R$</span>
-                  <input type="text" id="amount-text" maxlength="20" value="" placeholder="0,00" />
-                </div>
+              <div class="input-wrapper">
+                <input type="text" id="client-name" placeholder="Digite seu nome completo" />
               </div>
+            </div>
 
+            <div class="input-group">
+              <div class="box">
+                <label for="client-phone">Telefone</label>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="client-phone" placeholder="Digite seu número de contato" />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <div class="box">
+                <label for="client-email">E-mail</label>
+              </div>
+              <div class="input-wrapper">
+                <input type="email" id="client-email" placeholder="Digite seu melhor e-mail" />
+              </div>
+            </div>
+
+            <!-- Dados do empréstimo -->
+            <div class="input-group">
+              <div class="box">
+                <label for="amount-text">Quanto precisa?</label>
+              </div>
+              <div class="input-wrapper">
+                <span class="currency-prefix">R$</span>
+                <input type="text" id="amount-text" maxlength="20" value="" placeholder="0,00" />
+              </div>
+            </div>
+
+            <!-- Campos de entrada e aporte -->
+            <div id="entry-fields" style="display: none;">
               <div class="input-group">
                 <div class="box">
                   <label for="entry-value">Qual o valor de entrada?</label>
@@ -84,20 +108,6 @@
                   <span class="currency-prefix">R$</span>
                   <input type="text" id="entry-value" value="" placeholder="0,00" />
                 </div>
-              </div>
-
-              <div class="input-group">
-                <div class="box">
-                  <label for="months-select">Pagar em quantos meses?</label>
-                </div>
-                <select id="months-select">
-                  <option value="#" selected>Selecione um prazo</option>
-                  <option value="12">12 meses</option>
-                  <option value="24">24 meses</option>
-                  <option value="36">36 meses</option>
-                  <option value="48">48 meses</option>
-                  <option value="60">60 meses</option>
-                </select>
               </div>
 
               <div class="input-group">
@@ -112,372 +122,307 @@
                   <option value="12">12º mês</option>
                 </select>
               </div>
+            </div>
 
-              <!-- Data de vencimento -->
-              <div class="input-group">
-                <div class="box">
-                  <label for="start-date">Data inicial do vencimento</label>
-                </div>
-                <input type="date" id="start-date" />
+            <div class="input-group">
+              <div class="box">
+                <label for="months-select">Pagar em quantos meses?</label>
               </div>
-              
-              <button class="download-btn" onclick="openPopup()">Simule Já</button>
-            </section>
-          </div>
-        </main>
-      </div>
+              <select id="months-select">
+                <option value="#" selected>Selecione um prazo</option>
+                <option value="12">12 meses</option>
+                <option value="24">24 meses</option>
+                <option value="36">36 meses</option>
+                <option value="48">48 meses</option>
+                <option value="60">60 meses</option>
+              </select>
+            </div>
 
-      <!-- Pop-up de download/impressão -->
-      <div class="popup-overlay" id="popupOverlay">
-        <div class="popup-content">
-          <span class="close-popup" onclick="closePopup()">×</span>
-          <h2>Finalizar Simulação</h2>
-          <div class="popup-buttons">
-            <div class="box-btn">
-              <button class="popup-button" onclick="downloadSimulationPDF()">
-                Baixar
-              </button>
-              <p class="popup-message">Baixe seu PDF clicando no botão acima.</p>
+            <!-- Data de vencimento -->
+            <div class="input-group">
+              <div class="box">
+                <label for="start-date">Data inicial do vencimento</label>
+              </div>
+              <input type="date" id="start-date" />
             </div>
-            <div class="box-btn">
-              <button class="popup-button" onclick="printSimulationPDF()">Imprimir</button>
-              <p class="popup-message">
-                Imprima o resultado clicando no botão acima.
-              </p>
-            </div>
+
+            <button class="download-btn" onclick="openPopup(); updateSimulation();">Simule Já</button>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Pop-up de download/impressão -->
+    <div class="popup-overlay" id="popupOverlay">
+      <div class="popup-content">
+        <span class="close-popup" onclick="closePopup()">×</span>
+        <h2>Finalizar Simulação</h2>
+        <div class="popup-buttons">
+          <div class="box-btn">
+            <button class="popup-button" onclick="downloadSimulationPDF()">
+              Baixar
+            </button>
+            <p class="popup-message">Baixe seu PDF clicando no botão acima.</p>
+          </div>
+          <div class="box-btn">
+            <button class="popup-button" onclick="printSimulationPDF()">Imprimir</button>
+            <p class="popup-message">
+              Imprima o resultado clicando no botão acima.
+            </p>
           </div>
         </div>
       </div>
+    </div>
 
-      <script>
-        $(document).ready(function () {
-          // Aplicar máscara de moeda nos campos
-          $("#amount-text, #entry-value").mask("R$ ###.###.###,00", {
-            reverse: true,
-          });
-        });
+    <script>
+      function openPopup() {
+        document.getElementById("popupOverlay").style.display = "block";
+      }
 
-        function openPopup() {
-          document.getElementById("popupOverlay").style.display = "block";
+      function closePopup() {
+        document.getElementById("popupOverlay").style.display = "none";
+      }
+
+      function updateSimulation() {
+        const amount = parseFloat(document.getElementById("amount-text").value.replace(/[R$\.\s]/g, "").replace(",", ".")) || 0;
+        const entryValue = parseFloat(document.getElementById("entry-value").value.replace(/[R$\.\s]/g, "").replace(",", ".")) || 0;
+        const monthsSelectValue = document.getElementById("months-select").value;
+        const anticipateMonthValue = document.getElementById("anticipate-month").value;
+        const hasEntry = document.getElementById("has-entry").value === "sim";
+
+        const months = parseInt(monthsSelectValue) > 0 ? parseInt(monthsSelectValue) : 0;
+        const anticipateMonth = parseInt(anticipateMonthValue) > 0 ? parseInt(anticipateMonthValue) : 0;
+
+        if (months === 0 || (hasEntry && anticipateMonth === 0)) {
+          console.warn("Por favor, selecione um prazo e, se aplicável, um mês para antecipação.");
+          return;
         }
 
-        function closePopup() {
-          document.getElementById("popupOverlay").style.display = "none";
+        // Determinar a taxa de juros com base nas regras
+        let interestRate = 0;
+
+        if (hasEntry) {
+          if (anticipateMonth === 3 && [24, 36, 48].includes(months)) {
+            interestRate = 0.0199; // 1,99% ao mês
+          } else if (anticipateMonth === 5 && [24, 36, 48].includes(months)) {
+            interestRate = 0.0179; // 1,79% ao mês
+          } else if (anticipateMonth === 6 && [24, 36, 48].includes(months)) {
+            interestRate = 0.0169; // 1,69% ao mês
+          } else if ([3, 5, 6].includes(anticipateMonth) && months === 12) {
+            interestRate = 0.0245; // 2,45% ao mês
+          } else if (anticipateMonth === 12 && months === 60) {
+            interestRate = 0.0149; // 1,49% ao mês
+          }
+        } else {
+          interestRate = 0.0199; // Taxa fixa de 1,99% ao mês
         }
 
-        function updateSimulation() {
-    const amount = parseFloat(document.getElementById("amount-text").value.replace(/[R$\.\s]/g, "").replace(",", ".")) || 0;
-    const entryValue = parseFloat(document.getElementById("entry-value").value.replace(/[R$\.\s]/g, "").replace(",", ".")) || 0;
-    const monthsSelectValue = document.getElementById("months-select").value;
-    const anticipateMonthValue = document.getElementById("anticipate-month").value;
+        console.log("Taxa de juros aplicada: ", interestRate);
 
-    const months = parseInt(monthsSelectValue) > 0 ? parseInt(monthsSelectValue) : 0;
-    const anticipateMonth = parseInt(anticipateMonthValue) > 0 ? parseInt(anticipateMonthValue) : 0;
+        // Lógica de simulação permanece a mesma
+        let saldoAtual = amount;
+        const tableData = [];
+        const startDate = document.getElementById("start-date").value;
+        const startDateObj = new Date(startDate);
 
-    if (months === 0 || anticipateMonth === 0) {
-        console.warn("Por favor, selecione um prazo e um mês para antecipação.");
-        return;
-    }
+        // Valor da adesão é definido como o valor da parcela sem juros
+        let adesaoValue = (saldoAtual / months).toFixed(2);
 
-    // Determinar a taxa de juros com base nas regras
-    let interestRate = 0;
-
-    if (anticipateMonth === 3 && [24, 36, 48].includes(months)) {
-        interestRate = 0.0199; // 1,99% ao mês
-    } else if (anticipateMonth === 5 && [24, 36, 48].includes(months)) {
-        interestRate = 0.0179; // 1,79% ao mês
-    } else if (anticipateMonth === 6 && [24, 36, 48].includes(months)) {
-        interestRate = 0.0169; // 1,69% ao mês
-    } else if ([3, 5, 6].includes(anticipateMonth) && months === 12) {
-        interestRate = 0.0245; // 2,45% ao mês
-    } else if (anticipateMonth === 12 && months === 60) {
-        interestRate = 0.0149; // 1,49% ao mês
-    }
-
-    console.log("Taxa de juros aplicada: ", interestRate);
-
-    let saldoAtual = amount;
-    const tableData = [];
-    const startDate = document.getElementById("start-date").value;
-    const startDateObj = new Date(startDate);
-
-    // Valor da adesão é definido como o valor da parcela sem juros
-    let adesaoValue = (saldoAtual / months).toFixed(2);
-
-    // Adicionar adesão como uma linha inicial na tabela antes da primeira parcela
-    tableData.push([
-        "Adesão",
-        startDateObj.toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        }),
-        formatCurrency(adesaoValue),
-        "-",
-        formatCurrency(adesaoValue),
-    ]);
-
-    // Ajustar a data de vencimento da primeira parcela para um mês após a adesão
-    startDateObj.setMonth(startDateObj.getMonth() + 1);
-
-    // Primeira fase - Cálculo das parcelas antes do aporte
-    let monthlyPayment = (saldoAtual / months).toFixed(2);
-
-    for (let i = 1; i < anticipateMonth; i++) {
-        const dueDate = new Date(startDateObj);
-        dueDate.setMonth(dueDate.getMonth() + (i - 1));
-        const formattedDate = dueDate.toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        });
-
-        saldoAtual -= monthlyPayment; // Subtrair parcela mensal
-        console.log(`Mês ${i} - Pagamento: ${monthlyPayment}, Saldo atual: ${saldoAtual.toFixed(2)}`);
-
+        // Adicionar adesão como uma linha inicial na tabela antes da primeira parcela
         tableData.push([
+          "Adesão",
+          startDateObj.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }),
+          formatCurrency(adesaoValue),
+          "-",
+          formatCurrency(adesaoValue),
+        ]);
+
+        // Ajustar a data de vencimento da primeira parcela para um mês após a adesão
+        startDateObj.setMonth(startDateObj.getMonth() + 1);
+
+        // Primeira fase - Cálculo das parcelas antes do aporte
+        let monthlyPayment = (saldoAtual / months).toFixed(2);
+
+        for (let i = 1; i < anticipateMonth; i++) {
+          const dueDate = new Date(startDateObj);
+          dueDate.setMonth(dueDate.getMonth() + (i - 1));
+          const formattedDate = dueDate.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          });
+
+          saldoAtual -= monthlyPayment; // Subtrair parcela mensal
+          console.log(`Mês ${i} - Pagamento: ${monthlyPayment}, Saldo atual: ${saldoAtual.toFixed(2)}`);
+
+          tableData.push([
             i,
             formattedDate,
             formatCurrency(0),
             formatCurrency(monthlyPayment),
             formatCurrency(monthlyPayment),
-        ]);
-    }
+          ]);
+        }
 
-    // Aplicar o aporte no mês de antecipação
-    const saldoAntesAporte = saldoAtual;
-    saldoAtual -= entryValue;
-    console.log(`Saldo antes do aporte: ${saldoAntesAporte.toFixed(2)}`);
-    console.log(`Aplicando aporte de ${entryValue} no mês ${anticipateMonth}, novo saldo: ${saldoAtual.toFixed(2)}`);
+        // Aplicar o aporte no mês de antecipação
+        const saldoAntesAporte = saldoAtual;
+        saldoAtual -= entryValue;
+        console.log(`Saldo antes do aporte: ${saldoAntesAporte.toFixed(2)}`);
+        console.log(`Aplicando aporte de ${entryValue} no mês ${anticipateMonth}, novo saldo: ${saldoAtual.toFixed(2)}`);
 
-    // Fase 3 - Aplicar juros simples ao saldo restante e recalcular parcelas
-    const mesesRestantes = months - anticipateMonth + 1;
-    saldoAtual += saldoAtual * interestRate; // Aplicar juros ao saldo restante
-    console.log(`Saldo atualizado com juros aplicados ao valor restante: ${saldoAtual.toFixed(2)}`);
+        // Fase 3 - Aplicar juros simples ao saldo restante e recalcular parcelas
+        const mesesRestantes = months - anticipateMonth + 1;
+        saldoAtual += saldoAtual * interestRate; // Aplicar juros ao saldo restante
+        console.log(`Saldo atualizado com juros aplicados ao valor restante: ${saldoAtual.toFixed(2)}`);
 
-    monthlyPayment = (saldoAtual / mesesRestantes).toFixed(2); // Recalcular as parcelas restantes
-    console.log(`Novo valor da parcela mensal após juros: ${monthlyPayment}`);
+        monthlyPayment = (saldoAtual / mesesRestantes).toFixed(2); // Recalcular as parcelas restantes
+        console.log(`Novo valor da parcela mensal após juros: ${monthlyPayment}`);
 
-    for (let i = anticipateMonth; i <= months; i++) {
-        const dueDate = new Date(startDateObj);
-        dueDate.setMonth(dueDate.getMonth() + (i - 1));
-        const formattedDate = dueDate.toLocaleDateString("pt-BR", {
+        for (let i = anticipateMonth; i <= months; i++) {
+          const dueDate = new Date(startDateObj);
+          dueDate.setMonth(dueDate.getMonth() + (i - 1));
+          const formattedDate = dueDate.toLocaleDateString("pt-BR", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
-        });
+          });
 
-        saldoAtual -= monthlyPayment; // Subtrair parcela mensal
-        console.log(`Mês ${i} - Pagamento: ${monthlyPayment}, Saldo atual: ${saldoAtual.toFixed(2)}`);
+          saldoAtual -= monthlyPayment; // Subtrair parcela mensal
+          console.log(`Mês ${i} - Pagamento: ${monthlyPayment}, Saldo atual: ${saldoAtual.toFixed(2)}`);
 
-        tableData.push([
+          tableData.push([
             i,
             formattedDate,
             i === anticipateMonth ? formatCurrency(entryValue) : formatCurrency(0),
             formatCurrency(monthlyPayment),
             formatCurrency(monthlyPayment),
-        ]);
-    }
+          ]);
+        }
 
-    window.simulationData = {
-        clientName: document.getElementById("client-name").value,
-        clientPhone: document.getElementById("client-phone").value,
-        clientEmail: document.getElementById("client-email").value,
-        amount: amount,
-        adesaoValue: adesaoValue,
-        entryValue: entryValue,
-        months: months,
-        anticipateMonth: anticipateMonth,
-        interestRate: interestRate,
-        monthlyPayment: monthlyPayment,
-        startDate: startDate,
-        tableData: tableData,
-    };
-}
+        window.simulationData = {
+          clientName: document.getElementById("client-name").value,
+          clientPhone: document.getElementById("client-phone").value,
+          clientEmail: document.getElementById("client-email").value,
+          amount: amount,
+          adesaoValue: adesaoValue,
+          entryValue: entryValue,
+          months: months,
+          anticipateMonth: anticipateMonth,
+          interestRate: interestRate,
+          monthlyPayment: monthlyPayment,
+          startDate: startDate,
+          tableData: tableData,
+        };
+      }
 
-function generatePDFContent() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+      function formatCurrency(value) {
+        return parseFloat(value).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
 
-    const data = window.simulationData;
-    if (!data || !data.startDate) {
-        alert("Por favor, preencha todos os campos e gere a simulação antes de baixar o PDF.");
-        return null;
-    }
+      function generatePDFContent() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
 
-    const {
-        clientName,
-        clientPhone,
-        clientEmail,
-        amount,
-        adesaoValue,
-        entryValue,
-        months,
-        anticipateMonth,
-        interestRate,
-        tableData,
-    } = data;
+        const data = window.simulationData;
+        if (!data || !data.startDate) {
+          alert("Por favor, preencha todos os campos e gere a simulação antes de baixar o PDF.");
+          return null;
+        }
 
-    const logoUrl = "images/VFBANK.png";
-    doc.addImage(logoUrl, "PNG", 80, 10, 50, 30);
+        const {
+          clientName,
+          clientPhone,
+          clientEmail,
+          amount,
+          adesaoValue,
+          entryValue,
+          months,
+          anticipateMonth,
+          interestRate,
+          tableData,
+        } = data;
 
-    doc.setFillColor(255, 204, 0);
-    doc.rect(10, 50, 190, 10, "F");
+        const logoUrl = "images/VFBANK.png";
+        doc.addImage(logoUrl, "PNG", 80, 10, 50, 30);
 
-    doc.setFont("Helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(255, 255, 255);
-    doc.text("Simulação de Crédito", 105, 57, null, null, "center");
+        doc.setFillColor(255, 204, 0);
+        doc.rect(10, 50, 190, 10, "F");
 
-    const parametersTable = [
-        ["Nome do Cliente", clientName],
-        ["Telefone", clientPhone],
-        ["E-mail", clientEmail],
-        ["Crédito", formatCurrency(amount)],
-        ["Entrada/Aporte", formatCurrency(entryValue)],
-        ["Adesão", formatCurrency(adesaoValue)],
-        ["Prazo (Meses)", `${months}`],
-        ["Taxa de Juros", `${(interestRate * 100).toFixed(2)}%`],
-        ["Antecipar Mês", anticipateMonth ? `${anticipateMonth}º mês` : "N/A"],
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(14);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Simulação de Crédito", 105, 57, null, null, "center");
 
-        
-    ];
+        const parametersTable = [
+          ["Nome do Cliente", clientName],
+          ["Telefone", clientPhone],
+          ["E-mail", clientEmail],
+          ["Crédito", formatCurrency(amount)],
+          ["Entrada/Aporte", formatCurrency(entryValue)],
+          ["Adesão", formatCurrency(adesaoValue)],
+          ["Prazo (Meses)", `${months}`],
+          ["Taxa de Juros", `${(interestRate * 100).toFixed(2)}%`],
+          ["Antecipar Mês", anticipateMonth ? `${anticipateMonth}º mês` : "0"],
+        ];
 
-    doc.autoTable({
-        startY: 65,
-        head: [["PARÂMETROS", "VALORES"]],
-        body: parametersTable,
-        styles: { fontSize: 10, cellPadding: 5 },
-        headStyles: { fillColor: [255, 204, 0], textColor: 0 },
-        alternateRowStyles: { fillColor: [245, 245, 245] },
-    });
+        doc.autoTable({
+          startY: 65,
+          head: [["PARÂMETROS", "VALORES"]],
+          body: parametersTable,
+          styles: { fontSize: 10, cellPadding: 5 },
+          headStyles: { fillColor: [255, 204, 0], textColor: 0 },
+          alternateRowStyles: { fillColor: [245, 245, 245] },
+        });
 
-    doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 10,
-        head: [
+        doc.autoTable({
+          startY: doc.lastAutoTable.finalY + 10,
+          head: [
             [
-                "PARC",
-                "VENCIMENTO",
-                "ENTRADA/APORTE",
-                "PARCELA",
-                "PAGAMENTO",
+              "PARC",
+              "VENCIMENTO",
+              "ENTRADA/APORTE",
+              "PARCELA",
+              "PAGAMENTO",
             ],
-        ],
-        body: tableData,
-        styles: { fontSize: 10, cellPadding: 4 },
-        headStyles: { fillColor: [0, 0, 0], textColor: 255 },
-        alternateRowStyles: { fillColor: [240, 240, 240] },
-    });
+          ],
+          body: tableData,
+          styles: { fontSize: 10, cellPadding: 4 },
+          headStyles: { fillColor: [0, 0, 0], textColor: 255 },
+          alternateRowStyles: { fillColor: [240, 240, 240] },
+        });
 
-    return doc;
-}
+        return doc;
+      }
 
-
-        function formatCurrency(value) {
-          return parseFloat(value).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          });
+      function printSimulationPDF() {
+        const doc = generatePDFContent();
+        if (doc) {
+          doc.autoPrint();
+          window.open(doc.output('bloburl'), '_blank');
         }
+      }
 
-        function generatePDFContent() {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF();
-
-          const data = window.simulationData;
-          if (!data || !data.startDate) {
-            alert("Por favor, preencha todos os campos e gere a simulação antes de baixar o PDF.");
-            return null;
-          }
-
-          const {
-            clientName,
-            clientPhone,
-            clientEmail,
-            amount,
-            entryValue,
-            months,
-            adesaoValue,
-            anticipateMonth,
-            interestRate,
-            monthlyPayment,
-            startDate,
-            tableData,
-          } = data;
-
-          const logoUrl = "images/VFBANK.png";
-          doc.addImage(logoUrl, "PNG", 80, 10, 50, 30);
-
-          doc.setFillColor(255, 204, 0);
-          doc.rect(10, 50, 190, 10, "F");
-
-          doc.setFont("Helvetica", "bold");
-          doc.setFontSize(14);
-          doc.setTextColor(255, 255, 255);
-          doc.text("Simulação de Crédito", 105, 57, null, null, "center");
-
-          const parametersTable = [
-            ["Nome do Cliente", clientName],
-            ["Telefone", clientPhone],
-            ["E-mail", clientEmail],
-            ["Crédito", formatCurrency(amount)],
-            ["Entrada/Aporte", formatCurrency(entryValue)],
-            ["Prazo (Meses)", `${months}`],
-            ["Taxa de Juros", `${(interestRate * 100).toFixed(2)}%`],
-            ["Antecipar Mês", anticipateMonth ? `${anticipateMonth}º mês` : "N/A"],
-            ["Adesão", formatCurrency(adesaoValue)],
-          ];
-
-          doc.autoTable({
-            startY: 65,
-            head: [["PARÂMETROS", "VALORES"]],
-            body: parametersTable,
-            styles: { fontSize: 10, cellPadding: 5 },
-            headStyles: { fillColor: [255, 204, 0], textColor: 0 },
-            alternateRowStyles: { fillColor: [245, 245, 245] },
-          });
-
-          doc.autoTable({
-            startY: doc.lastAutoTable.finalY + 10,
-            head: [
-              [
-                "PARC",
-                "VENCIMENTO",
-                "ENTRADA/APORTE",
-                "PARCELA",
-                "PAGAMENTO",
-              ],
-            ],
-            body: tableData,
-            styles: { fontSize: 10, cellPadding: 4 },
-            headStyles: { fillColor: [0, 0, 0], textColor: 255 },
-            alternateRowStyles: { fillColor: [240, 240, 240] },
-          });
-
-          return doc;
+      function downloadSimulationPDF() {
+        const doc = generatePDFContent();
+        if (doc) {
+          doc.save("simulacao_credito.pdf");
         }
+      }
 
-        function printSimulationPDF() {
-          const doc = generatePDFContent();
-          if (doc) {
-            doc.autoPrint();
-            window.open(doc.output('bloburl'), '_blank');
-          }
-        }
-
-        function downloadSimulationPDF() {
-          const doc = generatePDFContent();
-          if (doc) {
-            doc.save("simulacao_credito.pdf");
-          }
-        }
-
-        // Adicionar eventos de atualização
-        document.getElementById("amount-text").addEventListener("change", updateSimulation);
-        document.getElementById("entry-value").addEventListener("change", updateSimulation);
-        document.getElementById("months-select").addEventListener("change", updateSimulation);
-        document.getElementById("anticipate-month").addEventListener("change", updateSimulation);
-        document.getElementById("start-date").addEventListener("change", updateSimulation);
-      </script>
-    </body>
-  </html>
+      // Adicionar eventos de atualização
+      document.getElementById("amount-text").addEventListener("change", updateSimulation);
+      document.getElementById("entry-value").addEventListener("change", updateSimulation);
+      document.getElementById("months-select").addEventListener("change", updateSimulation);
+      document.getElementById("anticipate-month").addEventListener("change", updateSimulation);
+      document.getElementById("start-date").addEventListener("change", updateSimulation);
+      document.getElementById("has-entry").addEventListener("change", updateSimulation);
+    </script>
+  </body>
+</html>

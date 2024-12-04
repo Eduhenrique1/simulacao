@@ -350,3 +350,14 @@ select#anticipate-month{
   padding-left: 16px;
   font-size: 14px;
 }
+
+select#has-entry{
+  width: 90%;
+  margin: 20px auto;
+  height: 35px;
+  border-radius: 5px;
+  outline: none;
+  border: 1px solid gray;
+  padding-left: 16px;
+  font-size: 14px;
+}
