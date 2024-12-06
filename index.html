@@ -47,89 +47,103 @@
       <main>
         <div class="esquerdo">
           <h2>Simule seu Crédito</h2>
-          <section class="simulator">
-            <!-- Tem entrada? -->
-          
-
-            <!-- Dados do cliente -->
+          <section id="step-1" class="simulator step">
+            <!-- <h3>Dados do Cliente</h3> -->
             <div class="input-group">
               <div class="box">
-                <label for="client-name">Nome do Cliente</label>
+                <label for="client-name">Nome do Cliente <span style="color: red;">*</span></label>
               </div>
               <div class="input-wrapper">
                 <input type="text" id="client-name" placeholder="Digite seu nome completo" />
               </div>
             </div>
-
+    
             <div class="input-group">
               <div class="box">
-                <label for="client-phone">Telefone</label>
+                <label for="client-phone">Telefone <span style="color: red;">*</span></label>
               </div>
               <div class="input-wrapper">
                 <input type="text" id="client-phone" placeholder="Digite seu número de contato" />
               </div>
             </div>
-
+    
             <div class="input-group">
               <div class="box">
-                <label for="client-email">E-mail</label>
+                <label for="client-email">E-mail <span style="color: red;">*</span></label>
               </div>
               <div class="input-wrapper">
                 <input type="email" id="client-email" placeholder="Digite seu melhor e-mail" />
               </div>
             </div>
-
-            <!-- Dados do empréstimo -->
+            <div class="btns-step1">
+              <button class="next-btn" onclick="goToStep(2)">Próximo</button>
+            </div>
+          </section>
+    
+          <section id="step-2" class="simulator step" style="display: none;">
+            <!-- <h3>Etapa 2: Dados do Empréstimo</h3> -->
             <div class="input-group">
               <div class="box">
-                <label for="amount-text">Quanto precisa?</label>
+                <label for="amount-text">Valor solicitado <span style="color: red;">*</span></label>
               </div>
               <div class="input-wrapper">
                 <span class="currency-prefix">R$</span>
-                <input type="text" id="amount-text" maxlength="20" value="" placeholder="0,00" />
+                <input type="text" id="amount-text" maxlength="20" placeholder="0,00" />
               </div>
             </div>
-
+    
             <div class="input-group">
               <div class="box">
-                <label for="has-entry">Tem entrada?</label>
+                <label for="has-entry">Tem entrada? <span style="color: red;">*</span></label>
               </div>
               <select id="has-entry">
                 <option value="#" selected>Selecione</option>
-                <option value="nao" >Não</option>
+                <option value="nao">Não</option>
                 <option value="sim">Sim</option>
               </select>
             </div>
+            <div class="btns">
+            <button class="prev-btn" onclick="goToStep(1)">Voltar</button>
+            <button class="next-btn" onclick="handleEntryNavigation()">Próximo</button>
 
-            <!-- Campos de entrada e aporte -->
-            <div id="entry-fields" style="display: none;">
-              <div class="input-group">
-                <div class="box">
-                  <label for="entry-value">Qual o valor de entrada?</label>
-                </div>
-                <div class="input-wrapper">
-                  <span class="currency-prefix">R$</span>
-                  <input type="text" id="entry-value" value="" placeholder="0,00" />
-                </div>
-              </div>
-
-              <div class="input-group">
-                <div class="box">
-                  <label for="anticipate-month">Em qual mês deseja colocar o aporte?</label>
-                </div>
-                <select id="anticipate-month">
-                  <option value="#" selected>Selecione o mês</option>
-                  <option value="3">3º mês</option>
-                  <option value="5">5º mês</option>
-                  <option value="6">6º mês</option>
-                  <option value="12">12º mês</option>
-                </select>
-              </div>
             </div>
-
+          </section>
+    
+          <section id="step-3" class="simulator step" style="display: none;">
+            <!-- <h3>Entrada e Aporte</h3> -->
             <div class="input-group">
               <div class="box">
-                <label for="months-select">Pagar em quantos meses?</label>
+                <label for="entry-value">Qual o valor de entrada? <span style="color: red;">*</span></label>
+              </div>
+              <div class="input-wrapper">
+                <span class="currency-prefix">R$</span>
+                <input type="text" id="entry-value" placeholder="0,00" />
+              </div>
+            </div>
+    
+            <div class="input-group">
+              <div class="box">
+                <label for="anticipate-month">Quando pretende obter o crédito? <span style="color: red;">*</span></label>
+              </div>
+              <select id="anticipate-month">
+                <option value="#" selected>Selecione o mês</option>
+                <option value="3">3º mês</option>
+                <option value="5">5º mês</option>
+                <option value="6">6º mês</option>
+                <option value="12">12º mês</option>
+              </select>
+            </div>
+            <div class="btns">
+              <button class="prev-btn" onclick="goToStep(2)">Voltar</button>
+                <button class="next-btn" onclick="goToStep(4)">Próximo</button>
+              </div>
+          </section>
+    
+          <section id="step-4" class="simulator step" style="display: none;">
+            <!-- <h3>Prazo e Data</h3> -->
+            <div class="input-group">
+              <div class="box">
+                <label for="months-select">Prazo <span style="color: red;">*</span></label>
               </div>
               <select id="months-select">
                 <option value="#" selected>Selecione um prazo</option>
@@ -140,21 +154,23 @@
                 <option value="60">60 meses</option>
               </select>
             </div>
-
-            <!-- Data de vencimento -->
+    
             <div class="input-group">
               <div class="box">
-                <label for="start-date">Data inicial do vencimento</label>
+                <label for="start-date">Data inicial do vencimento <span style="color: red;">*</span></label>
               </div>
               <input type="date" id="start-date" />
             </div>
-
-            <button class="download-btn" onclick="openPopup(); updateSimulation();">Simule Já</button>
+            <div class="btns">
+               <button class="prev-btn" onclick="goToPreviousStep()">Voltar</button>
+              <button class="download-btn" onclick="openPopup(); updateSimulation();">Simule Já</button>
+            </div>
+         
           </section>
         </div>
       </main>
     </div>
-
+    
     <!-- Pop-up de download/impressão -->
     <div class="popup-overlay" id="popupOverlay">
       <div class="popup-content">
@@ -162,22 +178,51 @@
         <h2>Finalizar Simulação</h2>
         <div class="popup-buttons">
           <div class="box-btn">
-            <button class="popup-button" onclick="downloadSimulationPDF()">
-              Baixar
-            </button>
+            <button class="popup-button" onclick="downloadSimulationPDF()">Baixar</button>
             <p class="popup-message">Baixe seu PDF clicando no botão acima.</p>
           </div>
           <div class="box-btn">
             <button class="popup-button" onclick="printSimulationPDF()">Imprimir</button>
-            <p class="popup-message">
-              Imprima o resultado clicando no botão acima.
-            </p>
+            <p class="popup-message">Imprima o resultado clicando no botão acima.</p>
           </div>
         </div>
       </div>
     </div>
-
+    
     <script>
+      function goToStep(step) {
+        document.querySelectorAll('.step').forEach((section) => {
+          section.style.display = 'none';
+        });
+        document.getElementById(`step-${step}`).style.display = 'block';
+      }
+    
+      function handleEntryNavigation() {
+  const hasEntry = document.getElementById('has-entry').value;
+
+  if (hasEntry === '#') {
+    alert('Por favor, selecione se tem ou não entrada.'); // Mensagem de alerta para campos não preenchidos
+    return;
+  }
+
+  if (hasEntry === 'sim') {
+    goToStep(3); // Avança para etapa 3 (entrada e aporte)
+  } else if (hasEntry === 'nao') {
+    goToStep(4); // Pula diretamente para etapa 4 (prazo e data)
+  }
+}
+
+      function goToPreviousStep() {
+        const hasEntry = document.getElementById('has-entry').value;
+        if (hasEntry === 'sim') {
+          goToStep(3);
+        } else {
+          goToStep(2);
+        }
+      }
+
+    
+
       function openPopup() {
         document.getElementById("popupOverlay").style.display = "block";
       }

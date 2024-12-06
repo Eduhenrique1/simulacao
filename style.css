@@ -129,7 +129,7 @@
   }
 
   .esquerdo {
-    width: 50%;
+    width: 60%;
   }
 
 
@@ -142,13 +142,12 @@
 
   .download-btn {
     display: inline-block;
-    margin: 20px auto;
     padding: 10px 20px;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
-    color: #000000;
-    background-color: #f6d620;
+    color: #000000 !important;
+    background-color: #f6d620 !important;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -172,8 +171,8 @@
 
   h2 {
     text-align: center;
-    margin-bottom: 50px;
-    margin-top: 50px;
+    margin-bottom: 25px;
+    margin-top: 20px;
   }
 
   .input-wrapper {
@@ -360,4 +359,38 @@ select#has-entry{
   border: 1px solid gray;
   padding-left: 16px;
   font-size: 14px;
+}
+
+button.next-btn, .prev-btn, .download-btn {
+  width: 24%;
+  display: flex;
+  height: 33px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  border: 1px solid gray;
+  background: #cf9a00;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btns-step1 {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 20px;
+
+}
+
+.next-btn:hover, .prev-btn:hover{
+  background: #f6d620;
+}
+
+.btns {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+
 }
