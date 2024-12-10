@@ -296,16 +296,30 @@ for (let i = anticipateMonth + 1; i <= months; i++) {
     year: "numeric",
   });
 
-  saldoAtual -= newMonthlyPayment;
-
-  tableData.push([
-    i,
-    formattedDate,
-    formatCurrency(0), // Nenhuma entrada adicional
-    formatCurrency(newMonthlyPayment),
-    formatCurrency(newMonthlyPayment),
-  ]);
+  if (i === months) {
+    // Zerar a última parcela
+    tableData.push([
+      i,
+      formattedDate,
+      formatCurrency(0), // Nenhuma entrada adicional
+      formatCurrency(0), // Parcela zerada
+      formatCurrency(0), // Pagamento zerado
+    ]);
+  } else {
+    // Adicionar parcelas normais
+    saldoAtual -= newMonthlyPayment;
+    tableData.push([
+      i,
+      formattedDate,
+      formatCurrency(0), // Nenhuma entrada adicional
+      formatCurrency(newMonthlyPayment),
+      formatCurrency(newMonthlyPayment),
+    ]);
+  }
 }
+
+// Ajustar a primeira parcela para incluir o valor da adesão
+tableData[0][2] = formatCurrency(adesaoValue); // Adicionar o valor da adesão na entrada
 
 
   console.log("Saldo final após todas as parcelas: ", saldoAtual.toFixed(2));
