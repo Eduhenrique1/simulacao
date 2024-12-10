@@ -203,17 +203,20 @@ function updateSimulation() {
     baseInterestRate = 0.0199; // Taxa fixa de 1,99% ao mês
   }
 
-  const effectiveInterestRate = baseInterestRate + 0.04; // Adiciona 4% à taxa de juros para o cálculo
+  // Aplicar a taxa fixa de 4% ao valor do financiamento
+  const adjustedAmount = amount + (amount * 0.04);
 
-  console.log("Taxa de juros aplicada: ", effectiveInterestRate);
+  console.log("Valor com taxa de 4% aplicada: ", adjustedAmount);
 
-  // Calcular o valor total com juros
-  const totalWithInterest = amount + amount * effectiveInterestRate * months;
+  // Calcular o valor total com juros aplicando a taxa mensal
+  const totalWithInterest = adjustedAmount + (adjustedAmount * baseInterestRate * months);
+
   console.log(`Valor total com juros aplicados: ${totalWithInterest.toFixed(2)}`);
 
   // Calcular parcela mensal considerando adesão como a primeira parcela
-  const monthlyPayment = (totalWithInterest / (months - 1)).toFixed(2); // Reduzindo o total de meses em 1 para incluir a adesão
-  console.log(`Parcela mensal inicial: ${monthlyPayment}`);
+  const monthlyPayment = (totalWithInterest / months).toFixed(2);
+
+  console.log(`Parcela mensal: ${monthlyPayment}`);
 
   const tableData = [];
   const startDate = document.getElementById("start-date").value;
@@ -259,45 +262,51 @@ function updateSimulation() {
   }
 
   // Aplicar o aporte no mês de antecipação
-  const dueDateAporte = new Date(startDateObj);
-  dueDateAporte.setMonth(startDateObj.getMonth() + anticipateMonth - 1);
-  saldoAtual -= entryValue;
+  // Aplicar o aporte no mês de antecipação
+const dueDateAporte = new Date(startDateObj);
+dueDateAporte.setMonth(startDateObj.getMonth() + anticipateMonth - 1);
+
+// Subtrair o aporte do saldo remanescente
+saldoAtual -= entryValue;
+
+// Adicionar o aporte na tabela
+tableData.push([
+  anticipateMonth,
+  dueDateAporte.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }),
+  formatCurrency(entryValue),
+  formatCurrency(monthlyPayment),
+  formatCurrency(monthlyPayment),
+]);
+
+// Recalcular as parcelas restantes sem juros
+const remainingMonths = months - anticipateMonth;
+const newMonthlyPayment = (saldoAtual / remainingMonths).toFixed(2);
+
+// Adicionar parcelas restantes na tabela
+for (let i = anticipateMonth + 1; i <= months; i++) {
+  const dueDate = new Date(dueDateAporte);
+  dueDate.setMonth(dueDate.getMonth() + (i - anticipateMonth));
+  const formattedDate = dueDate.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  saldoAtual -= newMonthlyPayment;
 
   tableData.push([
-    anticipateMonth,
-    dueDateAporte.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }),
-    formatCurrency(entryValue),
-    formatCurrency(monthlyPayment),
-    formatCurrency(monthlyPayment),
+    i,
+    formattedDate,
+    formatCurrency(0), // Nenhuma entrada adicional
+    formatCurrency(newMonthlyPayment),
+    formatCurrency(newMonthlyPayment),
   ]);
+}
 
-  // Recalcular as parcelas restantes após o aporte
-  const remainingMonths = months - anticipateMonth - 1; // Ajustando para excluir a última parcela
-  const newMonthlyPayment = (saldoAtual / remainingMonths).toFixed(2);
-
-  // Adicionar parcelas restantes
-  for (let i = anticipateMonth + 1; i <= months - 1; i++) {
-    const dueDate = new Date(dueDateAporte);
-    dueDate.setMonth(dueDate.getMonth() + (i - anticipateMonth));
-    const formattedDate = dueDate.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-
-    saldoAtual -= newMonthlyPayment;
-    tableData.push([
-      i,
-      formattedDate,
-      formatCurrency(0),
-      formatCurrency(newMonthlyPayment),
-      formatCurrency(newMonthlyPayment),
-    ]);
-  }
 
   console.log("Saldo final após todas as parcelas: ", saldoAtual.toFixed(2));
 
@@ -310,7 +319,8 @@ function updateSimulation() {
     entryValue: entryValue,
     months: months,
     anticipateMonth: anticipateMonth,
-    interestRate: baseInterestRate, // Mantém a taxa base no PDF
+    interestRate: baseInterestRate, // Mostra a taxa base no PDF
+    adjustedAmount: adjustedAmount, // Valor ajustado com os 4%
     tableData: tableData,
   };
 }
@@ -321,6 +331,7 @@ function formatCurrency(value) {
     currency: "BRL",
   });
 }
+
 
 function generatePDFContent() {
   const { jsPDF } = window.jspdf;
