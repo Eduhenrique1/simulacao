@@ -188,25 +188,27 @@ function updateSimulation() {
   }
 
   // Determinar a taxa de juros com base nas regras
-  let interestRate = 0;
+  let baseInterestRate = 0;
   if (anticipateMonth === 3 && [24, 36, 48].includes(months)) {
-    interestRate = 0.0199; // 1,99% ao mês
+    baseInterestRate = 0.0199; // 1,99% ao mês
   } else if (anticipateMonth === 5 && [24, 36, 48].includes(months)) {
-    interestRate = 0.0179; // 1,79% ao mês
+    baseInterestRate = 0.0179; // 1,79% ao mês
   } else if (anticipateMonth === 6 && [24, 36, 48].includes(months)) {
-    interestRate = 0.0169; // 1,69% ao mês
+    baseInterestRate = 0.0169; // 1,69% ao mês
   } else if ([3, 5, 6].includes(anticipateMonth) && months === 12) {
-    interestRate = 0.0245; // 2,45% ao mês
+    baseInterestRate = 0.0245; // 2,45% ao mês
   } else if (anticipateMonth === 12 && months === 60) {
-    interestRate = 0.0149; // 1,49% ao mês
+    baseInterestRate = 0.0149; // 1,49% ao mês
   } else {
-    interestRate = 0.0199; // Taxa fixa de 1,99% ao mês
+    baseInterestRate = 0.0199; // Taxa fixa de 1,99% ao mês
   }
 
-  console.log("Taxa de juros aplicada: ", interestRate);
+  const effectiveInterestRate = baseInterestRate + 0.04; // Adiciona 4% à taxa de juros para o cálculo
+
+  console.log("Taxa de juros aplicada: ", effectiveInterestRate);
 
   // Calcular o valor total com juros
-  const totalWithInterest = amount + amount * interestRate * months;
+  const totalWithInterest = amount + amount * effectiveInterestRate * months;
   console.log(`Valor total com juros aplicados: ${totalWithInterest.toFixed(2)}`);
 
   // Calcular parcela mensal considerando adesão como a primeira parcela
@@ -308,7 +310,7 @@ function updateSimulation() {
     entryValue: entryValue,
     months: months,
     anticipateMonth: anticipateMonth,
-    interestRate: interestRate,
+    interestRate: baseInterestRate, // Mantém a taxa base no PDF
     tableData: tableData,
   };
 }
@@ -362,7 +364,7 @@ function generatePDFContent() {
     ["Adesão", formatCurrency(adesaoValue)],
     ["Entrada/Aporte", formatCurrency(entryValue)],
     ["Prazo (Meses)", `${months}`],
-    ["Taxa de Juros", `${(interestRate * 100).toFixed(2)}%`],
+    ["Taxa de Juros", `${(interestRate * 100).toFixed(2)}%`], // Mostra a taxa base no PDF
     ["Antecipar Mês", anticipateMonth ? `${anticipateMonth}º mês` : "0"],
   ];
 
@@ -416,7 +418,6 @@ document.getElementById("entry-value").addEventListener("change", updateSimulati
 document.getElementById("months-select").addEventListener("change", updateSimulation);
 document.getElementById("anticipate-month").addEventListener("change", updateSimulation);
 document.getElementById("start-date").addEventListener("change", updateSimulation);
-
 
  </script>
   </body>
