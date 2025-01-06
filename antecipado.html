@@ -19,14 +19,6 @@
           reverse: true,
         });
       });
-window.onload = () => {
-  // Adiciona um parâmetro único na URL para evitar cache
-  if (!window.location.href.includes('nocache')) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('nocache', Date.now()); // Adiciona um timestamp
-    window.location.replace(url.toString());
-  }
-};
 
 
     </script>
@@ -284,7 +276,11 @@ function closePopup() {
 
 async function fetchTaxa(mes, parcelas) {
     try {
+<<<<<<< HEAD
       const response = await fetch(`getTaxas.php?mes=${mes}&parcelas=${parcelas}&nocache=${Date.now()}`);
+=======
+        const response = await fetch(`getTaxas.php?mes=${mes}&parcelas=${parcelas}`);
+>>>>>>> 70c8d8848a7cd0cdcfd836d04419a1b6c344b077
         if (!response.ok) {
             throw new Error(`Erro na requisição: ${response.statusText}`);
         }
@@ -301,7 +297,10 @@ async function fetchTaxa(mes, parcelas) {
 }
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 70c8d8848a7cd0cdcfd836d04419a1b6c344b077
 function addMonths(date, months) {
   const result = new Date(date);
   result.setMonth(result.getMonth() + months);
