@@ -276,11 +276,7 @@ function closePopup() {
 
 async function fetchTaxa(mes, parcelas) {
     try {
-<<<<<<< HEAD
       const response = await fetch(`getTaxas.php?mes=${mes}&parcelas=${parcelas}&nocache=${Date.now()}`);
-=======
-        const response = await fetch(`getTaxas.php?mes=${mes}&parcelas=${parcelas}`);
->>>>>>> 70c8d8848a7cd0cdcfd836d04419a1b6c344b077
         if (!response.ok) {
             throw new Error(`Erro na requisição: ${response.statusText}`);
         }
@@ -297,10 +293,6 @@ async function fetchTaxa(mes, parcelas) {
 }
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 70c8d8848a7cd0cdcfd836d04419a1b6c344b077
 function addMonths(date, months) {
   const result = new Date(date);
   result.setMonth(result.getMonth() + months);
